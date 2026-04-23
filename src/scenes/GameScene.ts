@@ -47,8 +47,8 @@ export class GameScene extends Phaser.Scene {
     this.saveManager = new SaveManager();
   }
 
-  init(data: { levelId: number }): void {
-    this.levelId = data.levelId ?? 1;
+  init(data?: { levelId?: number }): void {
+    this.levelId = data?.levelId ?? 1;
     this.currentSteps = 0;
     this.isComplete = false;
     this.hintCell = null;

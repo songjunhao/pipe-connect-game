@@ -208,20 +208,22 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   private setupScroll(width: number, height: number): void {
-    const scrollZone = this.add.zone(width / 2, height / 2, width, height - 70);
-    scrollZone.setInteractive();
-
+    // Use scene-level input for scrolling instead of a zone overlay
+    // This avoids blocking pointer events on interactive level buttons
     let startY = 0;
     let startScrollY = 0;
     const minY = Math.min(0, height - 70 - this.contentHeight);
 
-    scrollZone.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      startY = pointer.y;
-      startScrollY = this.scrollContainer.y;
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      // Only start scroll if pointer is in the scrollable area (below header)
+      if (pointer.y > 70) {
+        startY = pointer.y;
+        startScrollY = this.scrollContainer.y;
+      }
     });
 
-    scrollZone.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-      if (!pointer.isDown) return;
+    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+      if (!pointer.isDown || pointer.y <= 70) return;
       const diff = pointer.y - startY;
       let newY = startScrollY + diff;
       newY = Phaser.Math.Clamp(newY, minY, 0);
